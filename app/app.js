@@ -8,6 +8,7 @@ const byName = new Map(trophies.map(t => [t.name, t.id]));
 const validIds = new Set(trophies.map(t => t.id));
 let earned = new Set();
 let kind = 'All';
+let routeFilter;
 let selected = 17;
 let hideStory = true;
 
@@ -56,7 +57,8 @@ function visibleDescription(t) {
 }
 
 function matches(t) {
-  if (kind === 'Missable' ? !t.risk : kind !== 'All' && t.kind !== kind) return false;
+  if (routeFilter && !routeFilter(t)) return false;
+  if (kind === 'Missable' ? !t.missable : kind !== 'All' && t.kind !== kind) return false;
   if ($('grade').value && $('grade').value.toLowerCase() !== t.grade) return false;
   const state = $('state').value;
   if (state && earned.has(t.id) !== (state === 'Earned')) return false;
@@ -89,12 +91,10 @@ function renderGuide(t) {
     return;
   }
   guide.append(el('h3', '', 'How to unlock'), el('p', '', t.guide));
-  if (t.risk) {
-    guide.append(el('h3', '', 'Missable watchlist'), el('p', 'risk', t.risk));
+  if (t.missable) {
+    guide.append(el('h3', '', 'Potential missable'), el('p', '', t.missable_note));
   }
-  const citation = el('p', 'source', 'SOURCE · ');
-  citation.append(document.createTextNode(t.source));
-  guide.append(citation);
+  guide.append(el('p', 'source', t.source));
 }
 
 function makeRow(t) {
@@ -116,7 +116,7 @@ function makeRow(t) {
   button.setAttribute('aria-current', t.id === selected);
   const heading = el('span', 'rowTop');
   heading.append(el('span', 'name', visibleName(t)));
-  if (t.risk && !isHidden(t)) heading.append(el('span', 'risk', 'Watch'));
+  if (t.missable) heading.append(el('span', 'risk', 'Missable'));
   heading.append(el('span', 'grade ' + t.grade, t.grade));
   button.append(heading, el('span', 'desc', visibleDescription(t)));
   button.addEventListener('click', () => {
@@ -132,6 +132,7 @@ function makeRow(t) {
 
 function render(resetScroll = false) {
   const found = trophies.filter(matches).sort((a, b) => Number(isHidden(a)) - Number(isHidden(b)));
+  $("missableNote").hidden = kind !== "Missable";
   const active = found.find(t => t.id === selected) ?? found[0];
   selected = active?.id;
   const rows = $('rows');
@@ -139,7 +140,7 @@ function render(resetScroll = false) {
   rows.replaceChildren(...found.map(makeRow));
   rows.scrollTop = resetScroll ? 0 : scroll;
   if (!found.length) rows.append(el('p', 'empty', 'No matches. Try another filter or search.'));
-  $('results').textContent = found.length + ' of ' + trophies.length + ' trophies';
+  $('results').textContent = found.length + ' of ' + trophies.length + ' trophies' + (routeFilter ? ' · Route step' : '');
   renderProgress();
   renderGuide(active);
   if (!hideStory) $('spoilers').title = 'Story names and descriptions are visible';
@@ -154,7 +155,8 @@ function showRoadmap(show) {
   if (show) renderRoadmap();
 }
 
-function openCategory(category) {
+function openCategory(category, filter) {
+  routeFilter = filter;
   kind = category;
   for (const button of $('kinds').children) button.setAttribute('aria-pressed', button.textContent === kind);
   $('grade').value = $('state').value = $('search').value = '';
@@ -164,19 +166,30 @@ function openCategory(category) {
 
 function renderRoadmap() {
   const stages = [
-    ['Protect your run', 'Missable', 'Keep separate saves before chapter transitions and the finale where possible. Prioritize active stranger strands and one-off encounters. The official list does not confirm permanent lockouts.'],
-    ['Finish the story', 'Story', 'Opening mission → Chapters 1–4 → finale. Check off six other named missions as they appear. Their chapter positions and replay access are unspecified.'],
-    ['Finish the contacts', 'Strangers', 'Complete eight stranger strands. Track the final missions for Andy, Kenton, Billy, Randy and Tyrone, and follow up on Bret’s unique hunt.'],
-    ['Survey Leonida', 'Collectibles', 'Log 52 areas, 18 meditation spots, three complete card sets, 100 WAiNK locations and 100 discovered vehicles. Verify that new finds advance their own counters.'],
-    ['Clear skill & side goals', 'Activities', 'Gold all 42 range challenges, win at 14 drone sites and 20 different races, then finish 250 stunts, 50 challenges and the remaining activities.'],
-    ['Close out the platinum', 'Completion', 'Sweep free-roam and economy trophies. Verify 100% in-game completion separately, then earn the remaining trophies for 54 prerequisites total.']
+    {
+      title: '1. Story first',
+      includes: t => t.kind === 'Story' || t.missable,
+      notes: 'Finish the opening, Chapters 1–4 and the finale. Complete named missions when they appear. Check available stranger finales and partner objectives before advancing.'
+    },
+    {
+      title: '2. Cleanup',
+      includes: t => !t.missable && !['Story', 'Platinum', 'Completion'].includes(t.kind),
+      notes: 'Track 18 meditation spots, 3 card sets and 100 WAiNK locations. Clear 42 range golds, 14 drone race sites and 20 different race wins, then finish the remaining side goals.'
+    },
+    {
+      title: '3. Platinum',
+      includes: t => ['Completion', 'Platinum'].includes(t.kind),
+      notes: 'Check the in-game list for 100% completion. Verify all 54 prerequisites on PS5 and sync the trophy list before marking the platinum.'
+    }
   ];
-  $('stages').replaceChildren(...stages.map(([title, category, notes], i) => {
+  $('stages').replaceChildren(...stages.map(({title, includes, notes}) => {
+    const group = trophies.filter(includes);
+    const done = group.filter(t => earned.has(t.id)).length;
     const card = el('article', 'stage');
-    const action = el('button', '', 'View ' + category.toLowerCase() + ' →');
+    const action = el('button', '', 'View step trophies →');
     action.type = 'button';
-    action.addEventListener('click', () => openCategory(category));
-    card.append(el('p', 'eyebrow step', 'STEP 0' + (i + 1)), el('h3', '', title), el('p', '', notes), action);
+    action.addEventListener('click', () => openCategory('All', includes));
+    card.append(el('h3', '', title), el('p', 'eyebrow step', done + ' / ' + group.length + ' earned'), el('p', '', notes), action);
     return card;
   }));
 }
@@ -186,6 +199,7 @@ for (const category of kinds) {
   button.type = 'button';
   button.setAttribute('aria-pressed', category === kind);
   button.addEventListener('click', () => {
+    routeFilter = undefined;
     kind = category;
     for (const sibling of $('kinds').children) sibling.setAttribute('aria-pressed', sibling === button);
     render(true);
