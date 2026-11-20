@@ -3,23 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GTA VI trophy checklist</title>
+<title>Leonida Atlas · GTA VI trophy guide</title>
 <link rel="stylesheet" href="style.css">
+<script src="data/catalog.js" defer></script>
+<script src="app.js" defer></script>
 </head>
 <body>
-<header>
-  <h1>GTA VI trophy checklist</h1>
-  <p id="progress">0 of 55 earned</p>
+<header class="mast wrap">
+  <a class="brand" href="#tracker"><span class="monogram" aria-hidden="true">LA</span> LEONIDA ATLAS</a>
+  <div class="nav"><button id="trackerTab" type="button" aria-pressed="true">Tracker</button><button id="roadTab" type="button" aria-pressed="false">Platinum roadmap</button></div>
+  <span class="system">PS5 TROPHY GUIDE</span>
 </header>
-<div class="controls">
-  <label>Grade <select id="grade"><option value="all">All</option><option value="platinum">Platinum</option><option value="gold">Gold</option><option value="silver">Silver</option><option value="bronze">Bronze</option></select></label>
-  <button id="export" type="button">Export progress</button>
-  <label class="import">Import progress <input id="import" type="file" accept="application/json"></label>
-</div>
-<table>
-  <thead><tr><th>Earned</th><th>Trophy</th><th>Grade</th><th>How to get it</th></tr></thead>
-  <tbody id="rows"></tbody>
-</table>
-<script type="module" src="app.js"></script>
+<main class="wrap">
+  <section class="hero" aria-labelledby="title">
+    <div><p class="eyebrow">GRAND THEFT AUTO VI / PLAYSTATION 5</p><h1 id="title">THE ROAD TO<br><em>PLATINUM.</em></h1></div>
+    <div class="sun" aria-hidden="true"></div>
+    <section class="score" aria-label="Trophy progress">
+      <p class="eyebrow">YOUR TROPHIES</p>
+      <p class="scoreline"><strong id="earnedCount">0</strong><span> / 55 earned</span><b id="percent">0%</b></p>
+      <progress id="progress" value="0" max="55" aria-label="Trophies earned"></progress>
+      <div id="gradeCounts" class="gradeCounts"></div>
+    </section>
+  </section>
+  <section class="tools" aria-label="Progress settings">
+    <label class="spoiler"><input id="spoilers" type="checkbox" checked> Hide story spoilers</label>
+    <div class="backup"><button id="export" type="button">↓ Export progress</button><button id="importButton" type="button">↑ Import progress</button><input id="import" type="file" accept=".json,application/json" hidden></div>
+    <span id="status" role="status">Progress saves on this device</span>
+  </section>
+  <section id="tracker" aria-label="Trophy tracker">
+    <div class="filters">
+      <div id="kinds" class="kinds" aria-label="Trophy categories"></div>
+      <div class="fields">
+        <input id="search" type="search" aria-label="Search trophies" placeholder="Search trophies…">
+        <select id="grade" aria-label="Grade"><option value="">All grades</option><option>Platinum</option><option>Gold</option><option>Silver</option><option>Bronze</option></select>
+        <select id="state" aria-label="Earned status"><option value="">Any status</option><option>Remaining</option><option>Earned</option></select>
+      </div>
+    </div>
+    <div class="board">
+      <section class="index" aria-label="Trophy list"><header><strong>Trophy index</strong><span id="results" aria-live="polite"></span></header><div id="rows"></div></section>
+      <aside id="guide" aria-label="Selected trophy guide"></aside>
+    </div>
+  </section>
+  <section id="roadmap" aria-labelledby="routeTitle" hidden>
+    <div class="routeHeader"><div><p class="eyebrow">THE PLATINUM ROUTE</p><h2 id="routeTitle">Plan your run.</h2></div><button id="watch" type="button">Open missable watchlist →</button></div>
+    <div id="stages"></div>
+  </section>
+  <footer>Unofficial guide · Trophy data from the PS5 list in the Make.fun kit · No online trophies listed</footer>
+</main>
 </body>
 </html>
