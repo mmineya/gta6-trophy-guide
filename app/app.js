@@ -114,6 +114,7 @@ function makeRow(t) {
   const button = el('button');
   button.type = 'button';
   button.setAttribute('aria-current', t.id === selected);
+  button.setAttribute('aria-controls', 'guide');
   const heading = el('span', 'rowTop');
   heading.append(el('span', 'name', visibleName(t)));
   if (t.missable) heading.append(el('span', 'risk', 'Missable'));
@@ -186,7 +187,7 @@ function renderRoadmap() {
     const group = trophies.filter(includes);
     const done = group.filter(t => earned.has(t.id)).length;
     const card = el('article', 'stage');
-    const action = el('button', '', 'View step trophies →');
+    const action = el('button', '', 'View trophies: ' + title);
     action.type = 'button';
     action.addEventListener('click', () => openCategory('All', includes));
     card.append(el('h3', '', title), el('p', 'eyebrow step', done + ' / ' + group.length + ' earned'), el('p', '', notes), action);
@@ -248,3 +249,4 @@ $('import').addEventListener('change', async () => {
   }
 });
 render();
+window.__shotReady = true;

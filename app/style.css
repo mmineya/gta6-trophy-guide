@@ -24,7 +24,7 @@ button, select, input[type=search] { border: 1px solid var(--edge); color: var(-
 button { cursor: pointer; }
 button:hover, select:hover { border-color: var(--muted); }
 button[aria-pressed=true] { background: var(--lime); color: #222614; border-color: var(--lime); font-weight: 750; }
-:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
 .hero { min-height: 214px; position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 32px; border: 1px solid #654057; border-radius: 15px; background: linear-gradient(108deg,#302341 6%,#61314d 57%,#402b54); }
 .hero::after { content: ''; position: absolute; z-index: -1; inset: 65% -20% -45%; background: repeating-linear-gradient(0deg,#ffa28536 0 1px,transparent 1px 10px), repeating-linear-gradient(90deg,#ffa28536 0 1px,transparent 1px 55px); transform: perspective(200px) rotateX(45deg); mask-image: linear-gradient(transparent,black 32%); }
 .sun { width: 250px; aspect-ratio: 1; border-radius: 50%; position: absolute; z-index: -2; top: -24px; left: 49%; background: repeating-linear-gradient(to bottom,transparent 0 11px,#63304d 11px 14px),linear-gradient(#ffce93,#ff819f 65%,#a9568a); opacity: .85; }
@@ -58,6 +58,7 @@ input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--lime); cur
 .row:has([aria-current=true]) { background: #302942; box-shadow: inset 3px 0 var(--pink); }
 .row button { width: 100%; padding: 9px 0; text-align: left; border: 0; background: transparent; }
 .row button:hover .name { text-decoration: underline; }
+.row button:focus-visible { outline-offset: -3px; }
 .rowTop { display: flex; align-items: baseline; gap: 8px; }
 .rowTop .grade { margin-left: auto; }
 .name { font-weight: 800; font-size: 17px; }

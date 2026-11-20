@@ -4,8 +4,6 @@
 // and screenshots/ from beside this file to /output and writes /output/dossier.json, the summary the judge reads (your
 // screenshots, the first load's files and bytes, and your source), with the vendored make.fun library. Leave
 // vendor/makefun-frontend.ts as it is: the scorer requires dossier.json to be byte for byte what its own copy writes.
-//
-//
 // Leonida Atlas ships a self-contained trophy tracker and platinum roadmap.
 // Serve it locally with `node serve.ts`, then open http://localhost:8080.
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
@@ -17,7 +15,11 @@ import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-frontend.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const outputOverride = process.env.MAKEFUN_OUTPUT_DIR;
+if (outputOverride !== undefined && outputOverride.trim() === '') {
+  throw new Error('MAKEFUN_OUTPUT_DIR must be a non-empty path when set.');
+}
+const out = outputOverride ?? '/output';
 
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'app'), join(out, 'app'), { recursive: true });
