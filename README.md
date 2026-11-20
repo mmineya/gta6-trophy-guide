@@ -5,6 +5,7 @@
 [![reward](https://make.fun/badge/gta6-trophy-guide-01/mmineya/gta6-trophy-guide/reward.svg)](https://make.fun/bounty/gta6-trophy-guide-01)
 
 An offline guide and checklist for the 55 GTA VI trophies on PS5, built for the [make.fun bounty](https://make.fun/bounty/gta6-trophy-guide-01). Track progress, hide story spoilers, and plan a route to platinum. The missable watchlist covers trophies whose replay or repeat availability is unverified.
+The guide flags 25 potentially missable trophies based on official PS5 descriptions and cites a source for every trophy.
 
 Open `app/index.html` in Chrome, or run `node serve.ts` with Node 22.18+ and visit http://localhost:8080. Use Export progress to back up your checklist before moving devices.
 
